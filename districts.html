@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Explore Tamil Nadu Districts | Local Taxi Booking</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="assets/css/districts.css?v=1">
+    <style>
+        :root {
+            --orange: #F58220;
+            --orange-dark: #DC6D0F;
+            --white: #FFFFFF;
+            --ink: #252525;
+            --warm: #FFF9F3;
+            --muted: #6b6b6b;
+            --line: #f0e4d8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", "Inter", Arial, sans-serif;
+            color: var(--ink);
+            background: linear-gradient(180deg, var(--white) 0%, var(--warm) 100%);
+            overflow-x: hidden;
+        }
+
+        .districts-section {
+            padding: 64px 0 80px;
+        }
+
+        /* ---------- Heading ---------- */
+        .section-head {
+            max-width: 680px;
+            margin: 0 auto 32px;
+        }
+
+        .pin-badge {
+            display: inline-grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            color: #fff;
+            background: linear-gradient(135deg, #ffa24d, var(--orange));
+            box-shadow: 0 8px 20px rgba(245, 130, 32, .3);
+        }
+
+        .pin-badge svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .section-head h1 {
+            margin: 16px 0 10px;
+            font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+            font-weight: 700;
+            letter-spacing: -.01em;
+        }
+
+        .orange-line {
+            display: block;
+            width: 64px;
+            height: 4px;
+            margin: 0 auto 14px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--orange), #ffb877);
+        }
+
+        .lead-text {
+            margin: 0;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* ---------- Search ---------- */
+        .search-wrap {
+            position: relative;
+            max-width: 520px;
+            margin: 0 auto 10px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            transform: translateY(-50%);
+            color: var(--orange);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 52px;
+            padding: 0 46px 0 46px;
+            font: inherit;
+            font-size: .95rem;
+            color: var(--ink);
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .05);
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--orange);
+            box-shadow: 0 0 0 4px rgba(245, 130, 32, .15);
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            transform: translateY(-50%);
+            border: 0;
+            border-radius: 50%;
+            color: var(--muted);
+            background: transparent;
+            cursor: pointer;
+            transition: background .2s, color .2s;
+        }
+
+        .clear-btn:hover {
+            background: var(--warm);
+            color: var(--orange);
+        }
+
+        .clear-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .result-count {
+            margin: 0 0 26px;
+            text-align: center;
+            font-size: .85rem;
+            color: var(--muted);
+            min-height: 20px;
+        }
+
+        /* ---------- Cards ---------- */
+        .district-col {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .district-col.show {
+            opacity: 1;
+            transform: none;
+        }
+
+        .district-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(37, 37, 37, .06);
+            transition: transform .3s ease, box-shadow .3s ease;
+        }
+
+        .district-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 34px rgba(245, 130, 32, .18);
+        }
+
+        .card-media {
+            position: relative;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            background: var(--warm);
+        }
+
+        .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .6s ease;
+        }
+
+        .district-card:hover .card-media img {
+            transform: scale(1.07);
+        }
+
+        .loc-chip {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--orange-dark);
+            background: rgba(255, 255, 255, .94);
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .loc-chip svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .card-body-x {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 18px 18px 20px;
+        }
+
+        .d-name {
+            margin: 0 0 4px;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .d-tag {
+            margin: 0 0 8px;
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--orange-dark);
+        }
+
+        .d-desc {
+            margin: 0 0 18px;
+            font-size: .86rem;
+            line-height: 1.6;
+            color: var(--muted);
+            flex: 1;
+        }
+
+        /* Buttons: card kadaisila aligned */
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn-book,
+        .btn-call {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            min-height: 44px;
+            /* mobile tap target */
+            padding: 0 12px;
+            font-size: .85rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: transform .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+        }
+
+        .btn-book svg,
+        .btn-call svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .btn-book {
+            color: #fff;
+            background: var(--orange);
+            border: 1.5px solid var(--orange);
+            box-shadow: 0 6px 14px rgba(245, 130, 32, .3);
+        }
+
+        .btn-book:hover {
+            color: #fff;
+            background: var(--orange-dark);
+            border-color: var(--orange-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-call {
+            color: var(--orange);
+            background: var(--white);
+            border: 1.5px solid var(--orange);
+        }
+
+        .btn-call:hover {
+            color: #fff;
+            background: var(--orange);
+            transform: translateY(-2px);
+        }
+
+        .btn-book:focus-visible,
+        .btn-call:focus-visible {
+            outline: 3px solid rgba(245, 130, 32, .45);
+            outline-offset: 2px;
+        }
+
+        /* ---------- No results ---------- */
+        .no-results {
+            text-align: center;
+            padding: 56px 16px;
+            color: var(--muted);
+        }
+
+        .no-results svg {
+            width: 46px;
+            height: 46px;
+            color: var(--orange);
+        }
+
+        .no-results h2 {
+            margin: 12px 0 6px;
+            font-size: 1.2rem;
+            color: var(--ink);
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 575px) {
+            .districts-section {
+                padding: 44px 0 60px;
+            }
+
+            .btn-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* ---------- Reduced motion ---------- */
+        @media (prefers-reduced-motion: reduce) {
+            .district-col {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+
+            .district-card,
+            .card-media img,
+            .btn-book,
+            .btn-call {
+                transition: none;
+            }
+
+            .district-card:hover,
+            .district-card:hover .card-media img {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ONLY ONE SECTION: no navbar, header, footer, hero -->
+    <section class="districts-section" aria-labelledby="districtsTitle">
+        <div class="container">
+
+            <!-- Heading area -->
+            <div class="section-head text-center">
+                <span class="pin-badge" aria-hidden="true"><i data-lucide="map-pin"></i></span>
+                <h1 id="districtsTitle">Explore Tamil Nadu Districts</h1>
+                <span class="orange-line" aria-hidden="true"></span>
+                <p class="lead-text">
+                    Book reliable local taxis across Tamil Nadu. Choose your district,
+                    explore its identity and book your ride with ease.
+                </p>
+            </div>
+
+            <!-- Search -->
+            <div class="search-wrap">
+                <label for="districtSearch" class="visually-hidden">Search your district</label>
+                <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
+                <input id="districtSearch" type="search" class="search-input" placeholder="Search your district..."
+                    autocomplete="off" maxlength="40">
+                <button id="clearSearch" type="button" class="clear-btn" aria-label="Clear search" hidden>
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <p id="resultCount" class="result-count" aria-live="polite"></p>
+
+            <!-- District cards (JS builds these) -->
+            <div id="districtGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-4"></div>
+
+            <!-- No result message -->
+            <div id="noResults" class="no-results" hidden>
+                <i data-lucide="map-pin-off" aria-hidden="true"></i>
+                <h2>No districts found</h2>
+                <p>Try a different spelling or clear the search.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="assets/js/districts.js?v=1"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            /* ============================================================
+               CONFIG: inga maathunga
+               ============================================================ */
+            const PHONE = "+919876543210";          // <- unga business number (+91 format, space illama)
+            const BOOKING_PAGE = "booking.html";    // <- unga booking form file
+            const IMAGE_DIR = "assets/image/districts/";
+
+            /* ============================================================
+               DISTRICT DATA (38 official districts)
+               image: file peru. IMAGE_DIR-la andha peru-la photo vainga.
+               Photo illaina, automatic-ah orange fallback card kaattum.
+               ============================================================ */
+            const DISTRICTS = [
+                {name: "Ariyalur", tag: "Chola capital heritage", desc: "Reliable local taxi rides for daily travel, temple visits, and nearby destinations.", image: "Ariyalur.jpeg", alt: "Gangaikonda Cholapuram Brihadisvara temple, Ariyalur"},
+                {name: "Bengaluru", tag: "Sri Chamarajendra Park ", desc: "Reliable taxi services for local travel, business visits, and family transportation.", image: "Bengaluru.jpg", alt: "sri Chamarajendra Park, Bengaluru"},
+                {name: "Chengalpattu", tag: "Shore temples and birds", desc: "Comfortable taxi services for city travel, airport transfers, and family trips.", image: "Chengalpattu.jpeg", alt: "Shore Temple at Mahabalipuram, Chengalpattu"},
+                {name: "Chennai", tag: "Marina and metro life", desc: "Book trusted local taxis for city rides, airport pickups, and outstation journeys.", image: "Chennai.jpeg", alt: "Marina Beach and Chennai skyline"},
+                {name: "Coimbatore", tag: "Western Ghats gateway", desc: "Convenient taxi services for local travel, business trips, and hill station visits.", image: "Coimbatore.jpeg", alt: "Western Ghats hills near Coimbatore"},
+                {name: "Cuddalore", tag: "Beaches and coast", desc: "Affordable local taxi rides for beach visits, town travel, and family outings.", image: "Cuddalore.jpeg", alt: "Pichavaram mangrove forest, Cuddalore"},
+                {name: "Dharmapuri", tag: "Fort,Hogenakkal falls", desc: "Safe taxi services for local trips, sightseeing, and nearby tourist destinations.", image: "Dharmapuri.jpeg", alt: "Hogenakkal Falls, Dharmapuri"},
+                {name: "Dindigul", tag: "Palani and Kodaikanal", desc: "Reliable taxis for city travel, temple visits, and comfortable family journeys.", image: "Dindigul.jpeg", alt: "Dindigul Rock Fort and Kodaikanal hills and cave"},
+                {name: "Erode", tag: "Bhavanisagar Dam", desc: "Easy local taxi booking for shopping, business travel, and nearby destinations.", image: "Erode.jpeg", alt: "Bhavanisagar dam, Erode"},
+                {name: "Kallakurichi", tag: "Kalvarayan Hills", desc: "Convenient taxi services for town travel, temple visits, and daily transportation.", image: "Kallakurichi.jpeg", alt: "Wood Carvings, Kallakurichi"},
+                {name: "Kancheepuram", tag: "City of silk and temples", desc: "Comfortable taxi rides for temple tours, shopping, and local sightseeing.", image: "Kancheepuram.jpeg", alt: "Ekambareswarar Temple, Kancheepuram"},
+                {name: "Kanniyakumari", tag: "Land's end of India", desc: "Book local taxis to explore beaches, coastal attractions, and famous tourist spots.", image: "Kanniyakumari.jpeg", alt: "Vivekananda Rock Memorial, Kanniyakumari"},
+                {name: "Karur", tag: "Handloom and heritage", desc: "Dependable taxi services for business travel, local trips, and family transportation.", image: "Karur.jpeg", alt: "Handlooms and Textile , Karur"},
+                {name: "Krishnagiri", tag: "Mango and dams", desc: "Reliable local taxis for town rides, business visits, and nearby sightseeing.", image: "Krishnagiri.jpg", alt: "Krishnagiri Dam"},
+                {name: "Kumbakonam", tag: "Airavatesvar , Kumbeshwarar Temples", desc: "Reliable taxi services for local travel, business visits, and family transportation.", image: "Kumbakonam.jpeg", alt: "Airavatesvarar and kumbeshwarar temples, Kumbakonam"},
+                {name: "Madurai", tag: "Temple city", desc: "Explore temples, markets, and city attractions with convenient local taxi services", image: "Madurai.jpg", alt: "Meenakshi Amman Temple, Madurai"},
+                {name: "Mayiladuthurai", tag: "Kaveri delta temples", desc: "Comfortable taxi rides for temple visits, pilgrimage trips, and local travel.", image: "Mayiladuthurai.jpeg", alt: "Kollidam river and green paddy fields, Mayiladuthurai"},
+                {name: "Mysore", tag: "Maharaja's Palace" , desc: "Reliable taxi services for local travel, business visits, and family transportation.", image: "Mysore.jpg", alt: "Maha Raja's palace, Mysore"},
+                {name: "Nagapattinam", tag: "Faith by the sea", desc: "Book convenient taxis for coastal travel, pilgrimage visits, and nearby destinations.", image: "Nagapattinam.jpg", alt: "Velankanni Basilica, Nagapattinam"},
+                {name: "Namakkal", tag: "Fort and Kolli Hills", desc: "Affordable local taxi services for daily rides, temple visits, and family trips.", image: "Namakkal.jpg", alt: "Kolli Hills, Namakkal Fort"},
+                {name: "Nilgiris", tag: "Ooty hills and tea", desc: "Enjoy scenic taxi journeys through Ooty, Coonoor, tea gardens, and hill roads.", image: "Nilgiri.jpg", alt: "Tea gardens in Ooty, Nilgiris"},
+                {name: "Perambalur", tag: "Karaivetti Bird Sanctuary", desc: "Reliable taxi services for local transportation, temple visits, and nearby towns.", image: "Perambalur.jpeg", alt: "Sathanur fossil wood park, Perambalur"},
+                {name: "Puducherry", tag: "French Colony", desc: "Reliable taxi services for local travel, business visits, and family transportation.", image: "Puducherry.jpg", alt: "French Colony,Puducherry"},
+                {name: "Pudukkottai", tag: "Rock-cut heritage", desc: "Comfortable taxi rides for heritage sites, temple tours, and local sightseeing", image: "Pudukkottai.jpeg", alt: "Sittanavasal rock-cut cave, Pudukkottai"},
+                {name: "Ramanathapuram", tag: "Rameswaram and Pamban", desc: "Convenient taxi services for coastal destinations, temple visits, and regional travel.", image: "Ramanathapuram.jpeg", alt: "Pamban Bridge, Rameswaram, Ramanathapuram"},
+                {name: "Ranipet", tag: "industrial area", desc: "Book trusted local taxis for daily commuting, business travel, and family journeys.", image: "Ranipet.jpeg", alt: "Sholinghur Narasimha Temple hill, Ranipet"},
+                {name: "Salem", tag: "Yercaud and Mettur", desc: "Explore Salem city, Yercaud, and nearby attractions with reliable taxi services.", image: "Salem.jpg", alt: "Yercaud hills, Salem"},
+                {name: "Sivaganga", tag: "Chettinad mansions", desc: " Comfortable local taxi rides for temple visits, town travel, and family outings.", image: "Sivagangai.jpeg", alt: "Chettinad mansion, Karaikudi, Sivaganga"},
+                {name: "Tenkasi", tag: "Spa of South India", desc: "Discover waterfalls, temples, and scenic destinations with convenient taxi services.", image: "Tenkasi.jpg", alt: "Courtallam waterfalls, Tenkasi"},
+                {name: "Thanjavur", tag: "Chola heritage", desc: "Explore historic temples, cultural landmarks, and nearby destinations by local taxi.", image: "Thanjavur.jpeg", alt: "Brihadeeswarar Temple, Thanjavur"},
+                {name: "Theni", tag: "Falls and spice hills", desc: "Enjoy comfortable taxi trips to scenic landscapes, hills, and nearby tourist attractions", image: "Theni.jpeg", alt: "Suruli Falls, Theni"},
+                {name: "Thoothukudi", tag: "Port and pearl city", desc: "Reliable local taxis for coastal travel, business trips, and everyday transportation.", image: "Thoothukudi.jpg", alt: "Tiruchendur Murugan Temple, Thoothukudi"},
+                {name: "Tiruchirappalli", tag: "Rockfort and Kaveri", desc: "Book convenient taxis for city rides, Rockfort Temple, and airport transfers.", image: "Trichirapalli.jpg", alt: "Rockfort Temple, Tiruchirappalli"},
+                {name: "Tirunelveli", tag: "Manimuthar", desc: "Comfortable taxi services for temple visits, local travel, and nearby sightseeing.", image: "Thirunelveli.jpeg", alt: "Nellaiappar Temple, Tirunelveli"},
+                {name: "Tirupathur", tag: "Yelagiri ", desc: "Dependable local taxi rides for daily travel, family trips, and nearby destinations.", image: "Tirupathur.jpeg", alt: "Yelagiri Hills, Tirupathur"},
+                {name: "Tiruppur", tag: "Knitwear capital", desc: "Easy taxi booking for business visits, shopping, and comfortable city transportation.", image: "Tiruppur.jpeg", alt: "Amaravathi Dam, Tiruppur"},
+                {name: "Tiruvallur", tag: "Pulicat and temples", desc: "Reliable taxi services for local commuting, temple visits, and nearby destinations.", image: "Thiruvallur.jpeg", alt: "Pulicat Lake, Tiruvallur"},
+                {name: "Tiruvannamalai", tag: "Arunachala sacred hill", desc: "Book local taxis for Arunachaleswarar Temple, Girivalam, and pilgrimage travel.", image: "Tiruvannamalai.jpg", alt: "Annamalaiyar Temple, Tiruvannamalai"},
+                {name: "Tiruvarur", tag: "Aazhi Ther", desc: "Comfortable taxi rides for temple tours, cultural attractions, and local journeys.", image: "Thiruvarur.jpeg", alt: "Aazhi ther, Tiruvarur"},
+                {name: "Vellore", tag: " Vellour Fort ",desc:"Convenient taxi services for hospital visits, Vellore Fort, and city travel.", image: "Vellore.jpeg", alt: "Vellore Fort"},
+                {name: "Viluppuram", tag: "Gingee Fort", desc: "Affordable local taxis for daily commuting, temple visits, and nearby towns", image: "Viluppuram.jpg", alt: "Gingee Fort, Viluppuram"},
+                {name: "Virudhunagar", tag: "Sivakasi and Andal", desc: "Reliable taxi services for local travel, business visits, and family transportation.", image: "Virudhunagar.jpeg", alt: "Srivilliputhur Andal Temple, Virudhunagar"},
+            ];
+
+            // Alphabetical order (English name) ellaa nerathulayum urudhi
+            DISTRICTS.sort((a, b) => a.name.localeCompare(b.name, "en"));
+
+            /* ============================================================
+               HELPERS
+               ============================================================ */
+            const grid = document.getElementById("districtGrid");
+            const searchInput = document.getElementById("districtSearch");
+            const clearBtn = document.getElementById("clearSearch");
+            const noResults = document.getElementById("noResults");
+            const resultCount = document.getElementById("resultCount");
+
+            // Fallback image: image load aagalena orange card + district peru (SVG)
+            function fallbackImage(name) {
+                const safe = name.replace(/[<>&"']/g, "");
+                const svg =
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">' +
+                    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+                    '<stop offset="0" stop-color="#FFB877"/><stop offset="1" stop-color="#F58220"/></linearGradient></defs>' +
+                    '<rect width="800" height="500" fill="url(#g)"/>' +
+                    '<path d="M400 120c-48 0-86 38-86 86 0 64 86 150 86 150s86-86 86-150c0-48-38-86-86-86zm0 118a32 32 0 1 1 0-64 32 32 0 0 1 0 64z" fill="#fff" opacity=".92"/>' +
+                    '<text x="400" y="430" font-family="Poppins,Arial,sans-serif" font-size="46" font-weight="700" fill="#fff" text-anchor="middle">' +
+                    safe + "</text></svg>";
+                return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+            }
+
+            // Lucide icon element (safe: innerHTML illa)
+            function icon(name) {
+                const i = document.createElement("i");
+                i.setAttribute("data-lucide", name);
+                i.setAttribute("aria-hidden", "true");
+                return i;
+            }
+
+            function el(tag, className, text) {
+                const e = document.createElement(tag);
+                if (className) e.className = className;
+                if (text) e.textContent = text;
+                return e;
+            }
+
+            /* ============================================================
+               BUILD ONE CARD (safe DOM methods only)
+               ============================================================ */
+            function buildCard(d, index) {
+                const col = el("div", "col district-col");
+                col.dataset.name = d.name.toLowerCase();
+                col.style.transitionDelay = Math.min(index % 8, 7) * 60 + "ms";   // staggered entrance
+
+                const card = el("article", "district-card");
+
+                // Image
+                const media = el("div", "card-media");
+                const img = document.createElement("img");
+                img.src = IMAGE_DIR + d.image;
+                img.alt = d.alt;
+                img.width = 800;
+                img.height = 500;
+                img.decoding = "async";
+                img.loading = index < 4 ? "eager" : "lazy";      // first row eager, matha lazy
+                img.addEventListener("error", function () {
+                    img.onerror = null;
+                    img.src = fallbackImage(d.name);
+                });
+                media.appendChild(img);
+
+                const chip = el("span", "loc-chip");
+                chip.appendChild(icon("map-pin"));
+                chip.appendChild(document.createTextNode(d.name));
+                media.appendChild(chip);
+
+                // Body
+                const body = el("div", "card-body-x");
+                body.appendChild(el("h2", "d-name", d.name));
+                body.appendChild(el("p", "d-tag", d.tag));
+                body.appendChild(el("p", "d-desc", d.desc));
+
+                // Buttons
+                const row = el("div", "btn-row");
+
+                const book = el("a", "btn-book");
+                book.href = BOOKING_PAGE + "?district=" + encodeURIComponent(d.name);
+                book.setAttribute("aria-label", "Book a taxi in " + d.name);
+                book.appendChild(icon("car-front"));
+                book.appendChild(document.createTextNode("Book Now"));
+
+                const call = el("a", "btn-call");
+                call.href = "tel:" + PHONE;
+                call.setAttribute("aria-label", "Call us for a taxi in " + d.name);
+                call.appendChild(icon("phone"));
+                call.appendChild(document.createTextNode("Call Now"));
+
+                row.appendChild(book);
+                row.appendChild(call);
+                body.appendChild(row);
+
+                card.appendChild(media);
+                card.appendChild(body);
+                col.appendChild(card);
+                return col;
+            }
+
+            /* ============================================================
+               RENDER + REVEAL ANIMATION
+               ============================================================ */
+            const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            let observer = null;
+
+            if ("IntersectionObserver" in window && !reduceMotion) {
+                observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (en) {
+                        if (en.isIntersecting) {
+                            en.target.classList.add("show");
+                            observer.unobserve(en.target);
+                        }
+                    });
+                }, {threshold: 0.12});
+            }
+
+            const frag = document.createDocumentFragment();
+            const cards = DISTRICTS.map(function (d, i) {
+                const c = buildCard(d, i);
+                frag.appendChild(c);
+                return c;
+            });
+            grid.appendChild(frag);
+
+            cards.forEach(function (c) {
+                if (observer) observer.observe(c);
+                else c.classList.add("show");
+            });
+
+            if (window.lucide) window.lucide.createIcons();
+
+            /* ============================================================
+               SEARCH (case-insensitive, live)
+               ============================================================ */
+            function applySearch() {
+                const q = searchInput.value.trim().toLowerCase();
+                let visible = 0;
+
+                cards.forEach(function (c) {
+                    const match = q === "" || c.dataset.name.indexOf(q) !== -1;
+                    c.classList.toggle("d-none", !match);
+                    if (match) {
+                        visible++;
+                        c.classList.add("show");     // filter pannumbodhu card maraiyaama
+                    }
+                });
+
+                clearBtn.hidden = q === "";
+                noResults.hidden = visible !== 0;
+                resultCount.textContent =
+                    q === "" ? DISTRICTS.length + " districts" : visible + " of " + DISTRICTS.length + " districts";
+            }
+
+            searchInput.addEventListener("input", applySearch);
+
+            clearBtn.addEventListener("click", function () {
+                searchInput.value = "";
+                applySearch();
+                searchInput.focus();
+            });
+
+            applySearch();
+        })();
+    </script>
+</body>
+
+</html>
